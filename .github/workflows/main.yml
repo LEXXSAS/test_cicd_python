@@ -63,3 +63,4 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/fullname-test-api:latest
             ${{ secrets.DOCKER_USERNAME }}/fullname-test-api:${{ env.VERSION }}
+          no-cache: true
