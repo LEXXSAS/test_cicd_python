@@ -55,12 +55,14 @@ jobs:
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
-      - name: Очистка Buildx кэша
+      - name: Полная очистка перед сборкой
         run: |
-          docker buildx prune --all --force
-          docker buildx stop
-          docker buildx rm builder
-          docker buildx create --use --name builder --driver docker-container
+          docker system prune -a --volumes -f
+          docker container prune -f
+          docker image prune -a -f
+          docker volume prune -f
+          docker network prune -f
+          rm -rf ~/.docker/buildx
       
       - name: Сборка и отправка Docker-образа
         uses: docker/build-push-action@v5
@@ -70,6 +72,4 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/fullname-test-api:latest
             ${{ secrets.DOCKER_USERNAME }}/fullname-test-api:${{ env.VERSION }}
-          builder: builder
           no-cache: true
-          pull: true
